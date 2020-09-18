@@ -29,22 +29,56 @@ public class Main {
                 break;
             }
 
+            //START SPEL
+            boolean GameOver = false;
+
             //Dealing cards after bet
             playerHand.addCard(playingDeck.deal());
             dealerHand.addCard(playingDeck.deal());
             playerHand.addCard(playingDeck.deal());
             dealerHand.addCard(playingDeck.deal());
 
-            //Showing cards of player + total value of cards in hand
-            System.out.println("hand: " + playerHand);
-            System.out.println("Total value: " + playerHand.evaluateHand());
+            while (true) {
+                //Showing cards of player + total value of cards in hand
+                System.out.println("hand: " + playerHand);
+                System.out.println("Total value: " + playerHand.evaluateHand());
+                System.out.println("");
 
+                //showing first card the dealer has
+                System.out.println("Dealers hand: " + dealerHand.getCard(0));
+                System.out.println("Dealers card value: " + dealerHand.evaluateCard(dealerHand.getCard(0)));
+                System.out.println("");
 
-
-
-
-
-
+                //Options after evaluating cards
+                System.out.println("What would you like to do?\n1. Hit\n2. Stand\n3. Surrender\n4. Double\n5. Split (later misschien ooit maybe ooit eventueel ooit wellicht ooit mogelijkheid op ooit)");
+                int playerMove = playerInput.nextInt();
+                //Hit
+                if (playerMove == 1) {
+                    //player gets extra card
+                    playerHand.addCard(playingDeck.deal());
+                    //check if hand is bigger then 21 if true BUST
+                    if (playerHand.evaluateHand() > 21) {
+                        System.out.println("BUST your card value is: " + playerHand.evaluateHand());
+                        playerChips -= playerBet;
+                        GameOver = true;
+                    }
+                }
+                //Stand
+                else if (playerMove == 2) {
+                    break;
+                }
+                //Surrender
+                else if (playerMove == 3) {
+                    playerChips -= (playerBet/2);
+                    GameOver = true;
+                } else if (playerMove == 4) {
+                    //later
+                } else if (playerMove == 5) {
+                    //later misschien?
+                } else {
+                    System.out.println();
+                }
+            }
         }
         System.out.println("You're out of chips!");
         //optie om chips toe te voegen?

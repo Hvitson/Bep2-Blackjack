@@ -1,6 +1,5 @@
 package nl.hu.bep2.casino.blackjack.domain;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +38,10 @@ public class Deck {
     //adds card to deck"hand"
     public void addCard(Card card){
         this.cards.add(card);
+    }
+
+    public Card getCard(int i){
+        return this.cards.get(i);
     }
 
     public int evaluateHand(){
@@ -84,6 +87,39 @@ public class Deck {
             }
         }
 
+        return handValue;
+    }
+
+    public int evaluateCard(Card card){
+        int handValue = 0;
+            switch(card.getRank()){
+                case Ace:
+                    handValue = 11; break;
+                case Two:
+                    handValue = 2; break;
+                case Three:
+                    handValue = 3; break;
+                case Four:
+                    handValue = 4; break;
+                case Five:
+                    handValue = 5; break;
+                case Six:
+                    handValue = 6; break;
+                case Seven:
+                    handValue = 7; break;
+                case Eight:
+                    handValue = 8; break;
+                case Nine:
+                    handValue = 9; break;
+                case Ten:
+                    handValue = 10; break;
+                case Jack:
+                    handValue = 10; break;
+                case Queen:
+                    handValue = 10; break;
+                case King:
+                    handValue = 10; break;
+            }
         return handValue;
     }
 
