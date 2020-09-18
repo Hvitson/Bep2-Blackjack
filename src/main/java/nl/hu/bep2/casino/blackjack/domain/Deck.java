@@ -13,7 +13,7 @@ public class Deck {
     }
 
     public void createDeck() {
-        System.out.println("Creating an deck!");
+        System.out.println("Creating deck!");
         for (Suit suit : Suit.values()) {
             for (Rank rank : Rank.values()) {
                 this.cards.add(new Card(suit,rank));
@@ -121,6 +121,18 @@ public class Deck {
                     handValue = 10; break;
             }
         return handValue;
+    }
+
+    public void moveBackToDeck(Deck toFillDeck){
+        int deckSize = this.cards.size();
+
+        //puts cards in  to fill deck
+        for (int i = 0; i < deckSize; i++){
+            toFillDeck.addCard(this.getCard(i));
+        }
+        for (int i = 0; i < deckSize; i++){
+            this.cards.remove(0);
+        }
     }
 
     //"i" weg halen als af

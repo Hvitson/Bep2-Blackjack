@@ -8,6 +8,7 @@ public class Main {
         System.out.println("Willkommen to Hu-land BlackJack!@!");
         Deck playingDeck = new Deck();
         playingDeck.createDeck();
+        playingDeck.shuffle();
 
         //handen van het spel(Dealer en Speler)
         Deck dealerHand = new Deck();
@@ -28,6 +29,16 @@ public class Main {
                 //Y or N toevoegen?
                 break;
             }
+            while (true){
+                if (playerBet < 0){
+                    System.out.println("Bet has to be 0 to play for free or above 0 to bet money");
+                    System.out.println("How much would you like to bet?: ");
+                    playerBet = playerInput.nextDouble();
+                }
+                else{
+                    break;
+                }
+            }
 
             //START SPEL
             boolean GameOver = false;
@@ -38,9 +49,11 @@ public class Main {
             playerHand.addCard(playingDeck.deal());
             dealerHand.addCard(playingDeck.deal());
 
+
+            //Playing the game "interaction with dealer"
             while (true) {
                 //Showing cards of player + total value of cards in hand
-                System.out.println("hand: " + playerHand);
+                System.out.println("Players hand: " + playerHand);
                 System.out.println("Total value: " + playerHand.evaluateHand());
                 System.out.println("");
 
@@ -58,9 +71,10 @@ public class Main {
                     playerHand.addCard(playingDeck.deal());
                     //check if hand is bigger then 21 if true BUST
                     if (playerHand.evaluateHand() > 21) {
-                        System.out.println("BUST your card value is: " + playerHand.evaluateHand());
+                        System.out.println("BUST your total card value is too high! total card value: " + playerHand.evaluateHand());
                         playerChips -= playerBet;
                         GameOver = true;
+                        break;
                     }
                 }
                 //Stand
@@ -71,14 +85,80 @@ public class Main {
                 else if (playerMove == 3) {
                     playerChips -= (playerBet/2);
                     GameOver = true;
-                } else if (playerMove == 4) {
+                    break;
+                }
+                //Double
+                else if (playerMove == 4) {
                     //later
-                } else if (playerMove == 5) {
+                }
+                //Split
+                else if (playerMove == 5) {
                     //later misschien?
-                } else {
-                    System.out.println();
                 }
             }
+
+            //Dealers turn
+            System.out.println("");
+            System.out.println("Dealers turn!");
+            System.out.println("");
+
+            System.out.println("Dealers hand: " + dealerHand);
+            System.out.println("Total value: " + dealerHand.evaluateHand());
+
+            //checks if dealer has higher total card value then player
+            if (dealerHand.evaluateHand() > playerHand.evaluateHand() && GameOver == false){
+                System.out.println("Dealer wins with total card value of " + dealerHand.evaluateHand());
+                playerChips -= playerBet;
+                GameOver = true;
+            }
+
+            //Dealer needs to have total value of atleast 16.
+            while (dealerHand.evaluateHand() < 17 && GameOver == false){
+                dealerHand.addCard(playingDeck.deal());
+                System.out.println("Dealer draws card");
+                //System.out.println("Dealers draws: " + dealerHand.getCard(-1));
+            }
+
+            //show dealers final hand
+            System.out.println("Dealers hand: " + dealerHand);
+            System.out.println("Total value: " + dealerHand.evaluateHand());
+
+            //check if dealer is busted
+            if (dealerHand.evaluateHand() > 21 && GameOver == false){
+                System.out.println("Player has won with hand: ");
+                System.out.println("Players hand: " + playerHand);
+                System.out.println("Total value: " + playerHand.evaluateHand());
+                System.out.println("");
+                System.out.println("Player wins: "+ (playerBet*2) +" Chips!");
+                playerChips += (playerBet*2);
+                GameOver = true;
+            }
+
+            //if player and dealer have the same hand: dealer wins
+            if (playerHand.evaluateHand() == dealerHand.evaluateHand() && GameOver == false){
+                System.out.println("Dealer has won with hand: ");
+                System.out.println("Dealer hand: " + dealerHand);
+                System.out.println("Total value: " + dealerHand.evaluateHand());
+                playerChips -= playerBet;
+                GameOver = true;
+            }
+
+            //if player wins
+            if (playerHand.evaluateHand() > dealerHand.evaluateHand() && GameOver == false){
+                System.out.println("Player has won with hand: ");
+                System.out.println("Players hand: " + playerHand);
+                System.out.println("Total value: " + playerHand.evaluateHand());
+                playerChips += (playerBet*2);
+                GameOver = true;
+            }
+
+            //Game is over return cards to deck and shuffle
+            playerHand.moveBackToDeck(playingDeck);
+            dealerHand.moveBackToDeck(playingDeck);
+            playingDeck.shuffle();
+
+
+
         }
         System.out.println("You're out of chips!");
         //optie om chips toe te voegen?
