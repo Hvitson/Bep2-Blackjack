@@ -9,8 +9,7 @@
 //import java.util.List;
 //import java.util.UUID;
 //
-////boven 31 bust
-//public class FakeBlackJackRules implements GameRulesStrategy{
+//public class BlackJackRules implements GameRulesStrategy {
 //    private UUID id;
 //    private String username;
 //    private Long bet;
@@ -20,15 +19,16 @@
 //    private Hand dealerHand;
 //    private Deck deck;
 //
+//    //boven 21 bust
 //    public GameResponse start() {
 //        if (gameOver) {
 //            throw new Api400Exception("KENNOT START GAME! thats already over");
 //        }
+//        System.out.println(gameMode);
+//        System.out.println(deck);
 //
 //        this.deck.shuffle();
 //
-//        playerHand.addCard(deck.deal());
-//        dealerHand.addCard(deck.deal());
 //        playerHand.addCard(deck.deal());
 //        dealerHand.addCard(deck.deal());
 //        playerHand.addCard(deck.deal());
@@ -37,12 +37,12 @@
 //        int playerValue = playerHand.evaluateHand();
 //        int dealerValue = dealerHand.evaluateHand();
 //
-//        if (playerValue == 31 && dealerValue == 31) {
+//        if (playerValue == 21 && dealerValue == 21) {
 //            gameOver = true;
-//        } else if (playerValue == 31) {
+//        } else if (playerValue == 21) {
 //            bet = this.bet * 5;
 //            gameOver = true;
-//        } else if (dealerValue == 31) {
+//        } else if (dealerValue == 21) {
 //            bet = 0L;
 //            gameOver = true;
 //        }
@@ -57,7 +57,7 @@
 //        if (move.equals("hit")) {
 //            playerHand.addCard(deck.deal());
 //
-//            if (playerHand.evaluateHand() > 31){
+//            if (playerHand.evaluateHand() > 21){
 //                bet = 0L;
 //                gameOver = true;
 //            }
@@ -86,7 +86,7 @@
 //                dealerHand.addCard(deck.deal());
 //                System.out.println("Dealer draws card");
 //            }
-//            if (dealerHand.evaluateHand() > 31) {
+//            if (dealerHand.evaluateHand() > 21) {
 //                bet = bet * 2;
 //                gameOver = true;
 //            }
@@ -94,7 +94,7 @@
 //            if (playerHand.evaluateHand() == dealerHand.evaluateHand()) {
 //                gameOver = true;
 //            }
-//            if (31 >= playerHand.evaluateHand() && playerHand.evaluateHand() > dealerHand.evaluateHand()) {
+//            if (21 >= playerHand.evaluateHand() && playerHand.evaluateHand() > dealerHand.evaluateHand()) {
 //                bet = bet * 2;
 //                gameOver = true;
 //            }
@@ -105,4 +105,5 @@
 //        }
 //        throw new Api400Exception("'"+ move +"' is not a viable move! please try again");
 //    }
+//
 //}

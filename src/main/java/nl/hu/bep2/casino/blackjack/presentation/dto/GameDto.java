@@ -10,14 +10,16 @@ public class GameDto extends RepresentationModel<GameDto> {
     private final String username;
     private final UUID id;
     private final Long bet;
+    private final Long balanceChange;
     private final Hand playerHand;
     private final Hand dealerHand;
     private final boolean gameOver;
 
-    public GameDto(String username, UUID id, Long bet, Hand playerHand, Hand dealerHand, boolean gameOver) {
+    public GameDto(String username, UUID id, Long bet, Long balanceChange, Hand playerHand, Hand dealerHand, boolean gameOver) {
         this.username = username;
         this.id = id;
         this.bet = bet;
+        this.balanceChange = balanceChange;
         this.playerHand = playerHand;
         this.dealerHand = dealerHand;
         this.gameOver = gameOver;
@@ -33,6 +35,10 @@ public class GameDto extends RepresentationModel<GameDto> {
 
     public Long getBet() {
         return bet;
+    }
+
+    public Long getBalanceChange() {
+        return balanceChange;
     }
 
     public Hand getPlayerHand() {
@@ -62,6 +68,6 @@ public class GameDto extends RepresentationModel<GameDto> {
     }
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), username, id, bet, playerHand, dealerHand, gameOver);
+        return Objects.hash(super.hashCode(), username, id, bet, balanceChange, playerHand, dealerHand, gameOver);
     }
 }

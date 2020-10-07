@@ -41,6 +41,10 @@ public class Hand implements Serializable {
         return new Hand(List.of(this.getCard(0)));
     }
 
+    public Hand showLastCard() {
+        return new Hand(List.of(this.getCard(this.cards.size() - 1)));
+    }
+
     public int evaluateHand(){
         int handValue = 0;
         int acesValue = 0;

@@ -4,7 +4,6 @@ import nl.hu.bep2.casino.blackjack.application.GameService;
 import nl.hu.bep2.casino.blackjack.domain.Game;
 import nl.hu.bep2.casino.blackjack.domain.GameResponse;
 import nl.hu.bep2.casino.blackjack.presentation.dto.GameDto;
-import nl.hu.bep2.casino.blackjack.presentation.dto.MoveDto;
 import nl.hu.bep2.casino.blackjack.presentation.dto.StartGameInfo;
 import nl.hu.bep2.casino.blackjack.presentation.dto.UserDto;
 import nl.hu.bep2.casino.chips.application.ChipsService;
@@ -48,14 +47,23 @@ public class GameController {
         Long playerBet = gameInfo.betAmount;
         Long playerChips = chips.getAmount();
 
+        if (gameInfo.fakeReal != 1 && gameInfo.fakeReal != 2) {
+            throw new Api400Exception("GameMode must be '1' for normal blackjack or '2' for fake blackjack");
+        }
+
         if (playerBet > playerChips){
             throw new Api400Exception("Bet must be lower than: " + playerChips);
         }
+        if (playerBet < 0) {
+            throw new Api400Exception("Bet must higher than 0");
+        }
 
-        GameResponse gameResponse = this.gameService.start(profile.getUsername(), gameInfo.betAmount, gameInfo.amountOfDecks);
+
+        GameResponse gameResponse = this.gameService.start(profile.getUsername(),
+                gameInfo.betAmount, gameInfo.amountOfDecks, gameInfo.fakeReal);
 
         GameDto gameDto = new GameDto(gameResponse.getUsername(), gameResponse.getId(),
-                gameInfo.betAmount, gameResponse.getPlayerHand(),
+                gameInfo.betAmount, gameResponse.getBalanceChange(), gameResponse.getPlayerHand(),
                 gameResponse.getDealerHand(), gameResponse.isGameOver());
         return applyHateoasLinkToUser(applyHateoasLinkToGame(gameDto));
     }
@@ -66,7 +74,7 @@ public class GameController {
         Game game = this.gameService.findGame(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             if (username.equals(game.getUsername())){
-                GameDto gameDto = new GameDto(game.getUsername(), game.getId(), game.getBet(), game.getPlayerHand(), game.getDealerHand().showFirstCard(), game.isGameOver());
+                GameDto gameDto = new GameDto(game.getUsername(), game.getId(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand().showFirstCard(), game.isGameOver());
                 return applyHateoasLinkToUser(gameDto);
             }else {
                 throw new Api404Exception("no Game belonging to " + username + " has been found!");
@@ -103,7 +111,7 @@ public class GameController {
         }
         GameResponse gameResponse = this.gameService.gameMove(id, move);
         GameDto gameDto = new GameDto(gameResponse.getUsername(), gameResponse.getId(),
-                gameResponse.getBet(), gameResponse.getPlayerHand(),
+                gameResponse.getBet(), gameResponse.getBalanceChange(), gameResponse.getPlayerHand(),
                 gameResponse.getDealerHand(), gameResponse.isGameOver());
         return gameDto;
     }

@@ -47,6 +47,9 @@ public class Chips {
     public void deposit(Long amount) {
         this.amount += amount;
     }
+    public void withdraw(Long amount) {
+        this.amount -= amount;
+    }
 
     public User getUser() {
         return user;

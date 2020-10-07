@@ -8,10 +8,13 @@ public class StartGameInfo {
     public Long betAmount;
     @NotNull
     public int amountOfDecks;
+    @NotNull
+    public int fakeReal;
 
-    public StartGameInfo(@Positive Long betAmount, @NotNull int amountOfDecks) {
+    public StartGameInfo(@Positive Long betAmount, @NotNull int amountOfDecks, @NotNull int fakeReal) {
         this.betAmount = betAmount;
         this.amountOfDecks = amountOfDecks;
+        this.fakeReal = fakeReal;
     }
 
     public Long getBetAmount() {
@@ -20,5 +23,9 @@ public class StartGameInfo {
 
     public int getAmountOfDecks() {
         return amountOfDecks;
+    }
+
+    public int getFakeReal() {
+        return fakeReal;
     }
 }

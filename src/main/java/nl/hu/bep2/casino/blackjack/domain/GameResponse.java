@@ -6,16 +6,21 @@ public class GameResponse {
     private UUID id;
     private String username;
     private Long bet;
+    private Long balanceChange;
     private Hand playerHand;
     private Hand dealerHand;
+    private int gameMode;
     private boolean gameOver;
 
-    public GameResponse(UUID id, String username, Long bet, Hand playerHand, Hand dealerHand, boolean gameOver) {
+    public GameResponse(UUID id, String username, Long bet, Long balanceChange, Hand playerHand,
+                        Hand dealerHand, int gameMode, boolean gameOver) {
         this.id = id;
         this.username = username;
         this.bet = bet;
+        this.balanceChange = balanceChange;
         this.playerHand = playerHand;
         this.dealerHand = dealerHand;
+        this.gameMode = gameMode;
         this.gameOver = gameOver;
     }
 
@@ -31,12 +36,20 @@ public class GameResponse {
         return bet;
     }
 
+    public Long getBalanceChange() {
+        return balanceChange;
+    }
+
     public Hand getPlayerHand() {
         return playerHand;
     }
 
     public Hand getDealerHand() {
         return dealerHand;
+    }
+
+    public int getGameMode() {
+        return gameMode;
     }
 
     public boolean isGameOver() {
@@ -49,6 +62,7 @@ public class GameResponse {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", bet=" + bet +
+                ", balanceChange=" + balanceChange +
                 ", playerHand=" + playerHand +
                 ", dealerHand=" + dealerHand +
                 ", gameOver=" + gameOver +
