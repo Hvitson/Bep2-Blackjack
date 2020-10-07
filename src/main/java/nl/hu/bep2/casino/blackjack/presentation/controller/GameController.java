@@ -97,6 +97,7 @@ public class GameController {
         if (!username.equals(game.getUsername())) {
             throw new Api400Exception("User " + username + " does not belong to game with id: " + id);
         }
+        System.out.println("test 123");
         GameResponse gameResponse = this.gameService.gameMove(id, move);
         GameDto gameDto = new GameDto(gameResponse.getUsername(), gameResponse.getId(),
                 gameResponse.getBet(), gameResponse.getPlayerHand(),
