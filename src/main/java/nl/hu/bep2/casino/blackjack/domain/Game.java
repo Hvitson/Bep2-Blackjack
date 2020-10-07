@@ -1,6 +1,8 @@
 package nl.hu.bep2.casino.blackjack.domain;
 
 
+import nl.hu.bep2.casino.exceptions.apirequest.Api400Exception;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -43,7 +45,6 @@ public class Game {
             throw new InvalidStateException("KENNOT START GAME! thats already over");
         }
 
-        this.deck.fill();
         this.deck.shuffle();
 
         playerHand.addCard(deck.deal());
@@ -69,14 +70,77 @@ public class Game {
         );
     }
 
-    public GameResponse hit(){
-        playerHand.addCard(deck.deal());
+    public GameResponse move(String move){
 
-        return new GameResponse(
-                id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
-        );
+        int playerValue = playerHand.evaluateHand();
+        int dealerValue = dealerHand.evaluateHand();
+
+        if (move.equals("hit")) {
+            playerHand.addCard(deck.deal());
+
+            if (playerValue > 21){
+                bet = 0L;
+                gameOver = true;
+            }
+            //als playerValue 21 is ook stoppen?
+
+            return new GameResponse(
+                    id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
+            );
+        }
+        if (move.equals("stand")) {
+            if (dealerValue > )
+
+            gameOver = true;
+        }
+        if (move.equals("surrender")) {
+            gameOver = true;
+                return new GameResponse(
+                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
+                );
+        }
+        if (move.equals("double")) {
+            bet = bet *2;
+                playerHand.addCard(deck.deal());
+
+                return new GameResponse(
+                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
+                );
+        }
+//        switch (move){
+//            case HIT:
+//                playerHand.addCard(deck.deal());
+//
+//                int playerValue = playerHand.evaluateHand();
+//
+//                if (playerValue > 21){
+//                    bet = 0L;
+//                    gameOver = true;
+//                }
+//                //als playerValue 21 is ook stoppen?
+//
+//                return new GameResponse(
+//                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
+//                );
+//                break;
+//            case STAND:
+//                //todo: dealer laten spelen
+//                System.out.println(dealerHand);break;
+//            case SURRENDER:
+//                gameOver = true;
+//                return new GameResponse(
+//                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
+//                );break;
+//            case DOUBLE:
+//                bet = bet *2;
+//                playerHand.addCard(deck.deal());
+//
+//                return new GameResponse(
+//                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
+//                );break;
+//        }
+        throw new Api400Exception("This is not a move!");
     }
-
 
     public UUID getId() {
         return id;
@@ -98,13 +162,14 @@ public class Game {
         return dealerHand;
     }
 
-    public Deck getDeck() {
-        return deck;
-    }
-
     public boolean isGameOver() {
         return gameOver;
     }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
 
     @Override
     public String toString() {

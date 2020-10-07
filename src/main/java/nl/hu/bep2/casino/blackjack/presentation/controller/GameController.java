@@ -2,8 +2,10 @@ package nl.hu.bep2.casino.blackjack.presentation.controller;
 
 import nl.hu.bep2.casino.blackjack.application.GameService;
 import nl.hu.bep2.casino.blackjack.domain.Game;
-import nl.hu.bep2.casino.blackjack.presentation.dto.Bet;
+import nl.hu.bep2.casino.blackjack.domain.GameResponse;
 import nl.hu.bep2.casino.blackjack.presentation.dto.GameDto;
+import nl.hu.bep2.casino.blackjack.presentation.dto.MoveDto;
+import nl.hu.bep2.casino.blackjack.presentation.dto.StartGameInfo;
 import nl.hu.bep2.casino.blackjack.presentation.dto.UserDto;
 import nl.hu.bep2.casino.chips.application.ChipsService;
 import nl.hu.bep2.casino.chips.data.Chips;
@@ -34,41 +36,37 @@ public class GameController {
         this.chipsService = chipsService;
     }
 
+
     @PostMapping("/start")
-    public GameDto startGame(Authentication authentication, @RequestBody Bet bet) {
+    public GameDto startGame(Authentication authentication, @RequestBody StartGameInfo gameInfo) {
         UserProfile profile = (UserProfile) authentication.getPrincipal();
 
         Chips chips = this.chipsService
                 .findBalance(profile.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        UUID id = UUID.randomUUID();
-        Long playerBet = bet.betAmount;
+        Long playerBet = gameInfo.betAmount;
         Long playerChips = chips.getAmount();
 
-        if (playerBet <= playerChips) {
-            this.gameService.start(id, profile.getUsername(), bet.betAmount);
-
-            Game game = this.gameService.findGame(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-            if (profile.getUsername().equals(game.getUsername())){
-                GameDto gameDto = new GameDto(game.getUsername(), id, bet.betAmount, game.isGameOver());
-                return applyHateoasLinkToUser(applyHateoasLinkToGame(gameDto));
-            }else{
-                throw new Api400Exception("Could not create game");
-            }
-        }else {
+        if (playerBet > playerChips){
             throw new Api400Exception("Bet must be lower than: " + playerChips);
         }
+
+        GameResponse gameResponse = this.gameService.start(profile.getUsername(), gameInfo.betAmount, gameInfo.amountOfDecks);
+
+        GameDto gameDto = new GameDto(gameResponse.getUsername(), gameResponse.getId(),
+                gameInfo.betAmount, gameResponse.getPlayerHand(),
+                gameResponse.getDealerHand(), gameResponse.isGameOver());
+        return applyHateoasLinkToUser(applyHateoasLinkToGame(gameDto));
     }
+
 
     @GetMapping("/{username}/{id}")
     public GameDto showGame(@PathVariable("username") @NotNull String username, @PathVariable("id") @NotNull UUID id) {
         Game game = this.gameService.findGame(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             if (username.equals(game.getUsername())){
-                GameDto gameDto = new GameDto(game.getUsername(), game.getId(), game.getBet(), game.isGameOver());
+                GameDto gameDto = new GameDto(game.getUsername(), game.getId(), game.getBet(), game.getPlayerHand(), game.getDealerHand().showFirstCard(), game.isGameOver());
                 return applyHateoasLinkToUser(gameDto);
             }else {
                 throw new Api404Exception("no Game belonging to " + username + " has been found!");
@@ -79,12 +77,52 @@ public class GameController {
     //todo: lijst alle games met eventueel of hij afgesloten is of lijst met alle openstaande spellen?
     // + informatie over user? zoals gespeelde spellen? aantal gewoonn
     @GetMapping("/{username}")
-    public UserDto get(@PathVariable("username") @NotNull final String username) {
-       UserDto userDto = new UserDto(username);
-        return userDto;
+    public UserDto get(@PathVariable("username") final String username) {
+        UserDto userDto = new UserDto(username, null);
+           return applyHateoasLinkToUsersGames(userDto);
+
     }
 
+    @PostMapping("/{username}/{id}/{move}")
+    public GameDto move(@PathVariable("username") final String username,
+                        @PathVariable("id") final UUID id,
+                        @PathVariable("move") final String move) {
+        Game game = this.gameService.findGame(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        if (game.isGameOver()) {
+            throw new Api400Exception("Game with id: " + id + " is already over!");
+        }
+
+        if (!username.equals(game.getUsername())) {
+            throw new Api400Exception("User " + username + " does not belong to game with id: " + id);
+        }
+        GameResponse gameResponse = this.gameService.gameMove(id, move);
+        GameDto gameDto = new GameDto(gameResponse.getUsername(), gameResponse.getId(),
+                gameResponse.getBet(), gameResponse.getPlayerHand(),
+                gameResponse.getDealerHand(), gameResponse.isGameOver());
+        return gameDto;
+    }
+
+//    public UserDto get(@PathVariable("username") final String username) {
+//        List<UUID> gamesList = new ArrayList();
+//        gamesList.add(gameService.findAllGamesFromUser(username));
+//        System.out.println(gamesList);
+//        UserDto useruser = new UserDto(username, null);
+//        for (int i = 0; i <  gamesList.size(); i++) {
+//
+//            UserDto userDto = new UserDto(username, gamesList.get(i));
+//            System.out.println(userDto);
+//            return applyHateoasLinkToUsersGames(userDto);
+//        }
+//        return useruser;
+//    }
+
+    private UserDto applyHateoasLinkToUsersGames(UserDto userDto) {
+        final Link GameLink = linkTo(methodOn(GameController.class).showGame(userDto.getUsername(), userDto.getId())).withSelfRel();
+        userDto.add(GameLink);
+        return userDto;
+    }
 
     private GameDto applyHateoasLinkToUser(GameDto gameDto) {
         final Link UserLink = linkTo(methodOn(GameController.class).get(gameDto.getUsername())).withSelfRel();

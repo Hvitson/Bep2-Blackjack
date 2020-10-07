@@ -6,7 +6,6 @@ public class GameResponse {
     private UUID id;
     private String username;
     private Long bet;
-
     private Hand playerHand;
     private Hand dealerHand;
     private boolean gameOver;

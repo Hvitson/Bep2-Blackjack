@@ -87,6 +87,10 @@ public class Hand implements Serializable {
         return handValue;
     }
 
+    public List<Card> getCards() {
+        return cards;
+    }
+
     @Override
     public String toString() {
         return "Hand{" +

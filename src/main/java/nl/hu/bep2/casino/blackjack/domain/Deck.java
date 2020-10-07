@@ -17,13 +17,13 @@ public class Deck implements Serializable {
         this.cards = cards;
     }
 
-    public void fill() {
-        for (Suit suit : Suit.values()) {
-            for (Rank rank : Rank.values()) {
-                this.cards.add(new Card(suit,rank));
-            }
-        }
-    }
+//    public void fill() {
+//        for (Suit suit : Suit.values()) {
+//            for (Rank rank : Rank.values()) {
+//                this.cards.add(new Card(suit,rank));
+//            }
+//        }
+//    }
 
     //schudden van de kaarten nu automaties bij het aanmaken van een deck
     public void shuffle(){
@@ -46,8 +46,10 @@ public class Deck implements Serializable {
         return this.cards.get(i);
     }
 
-    //"i" weg halen als af
-    //laat deck inhoud zien
+    public List<Card> getCards() {
+        return cards;
+    }
+
     @Override
     public String toString() {
         String cardsInDeck = "";
