@@ -23,20 +23,6 @@ public class Hand implements Serializable {
         return this.cards.get(i);
     }
 
-
-
-    public void moveBackToDeck(Deck toFillDeck){
-        int deckSize = this.cards.size();
-
-        //puts cards in  to fill deck
-        for (int i = 0; i < deckSize; i++){
-            toFillDeck.addCard(this.getCard(i));
-        }
-        for (int i = 0; i < deckSize; i++){
-            this.cards.remove(0);
-        }
-    }
-
     public Hand showFirstCard() {
         return new Hand(List.of(this.getCard(0)));
     }

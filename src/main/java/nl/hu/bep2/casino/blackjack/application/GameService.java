@@ -72,7 +72,6 @@ public class GameService {
         if (game.isGameOver() && game.getBet() > 0) {
             this.chipsService.depositChips(username, game.getBet());
         }
-
         this.gameRepository.save(game);
 
         return response;

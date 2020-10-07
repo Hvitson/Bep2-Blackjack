@@ -71,14 +71,10 @@ public class Game {
     }
 
     public GameResponse move(String move){
-
-        int playerValue = playerHand.evaluateHand();
-        int dealerValue = dealerHand.evaluateHand();
-
         if (move.equals("hit")) {
             playerHand.addCard(deck.deal());
 
-            if (playerValue > 21){
+            if (playerHand.evaluateHand() > 21){
                 bet = 0L;
                 gameOver = true;
             }
@@ -88,58 +84,44 @@ public class Game {
                     id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
             );
         }
-        if (move.equals("stand")) {
-            if (dealerValue > )
 
-            gameOver = true;
-        }
         if (move.equals("surrender")) {
+            bet = bet / 2;
             gameOver = true;
-                return new GameResponse(
-                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
-                );
-        }
-        if (move.equals("double")) {
-            bet = bet *2;
-                playerHand.addCard(deck.deal());
 
-                return new GameResponse(
-                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
-                );
+            return new GameResponse(
+                    id, username, bet, playerHand, dealerHand, gameOver
+            );
         }
-//        switch (move){
-//            case HIT:
-//                playerHand.addCard(deck.deal());
-//
-//                int playerValue = playerHand.evaluateHand();
-//
-//                if (playerValue > 21){
-//                    bet = 0L;
-//                    gameOver = true;
-//                }
-//                //als playerValue 21 is ook stoppen?
-//
-//                return new GameResponse(
-//                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
-//                );
-//                break;
-//            case STAND:
-//                //todo: dealer laten spelen
-//                System.out.println(dealerHand);break;
-//            case SURRENDER:
-//                gameOver = true;
-//                return new GameResponse(
-//                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
-//                );break;
-//            case DOUBLE:
-//                bet = bet *2;
-//                playerHand.addCard(deck.deal());
-//
-//                return new GameResponse(
-//                        id, username, bet, playerHand, dealerHand.showFirstCard(), gameOver
-//                );break;
-//        }
-        throw new Api400Exception("This is not a move!");
+
+        if (move.equals("double") || move.equals("stand")) {
+            if (move.equals("double")) {
+                bet = bet *2;
+                playerHand.addCard(deck.deal());
+            }
+
+            while (dealerHand.evaluateHand() < 17){
+                dealerHand.addCard(deck.deal());
+                System.out.println("Dealer draws card");
+            }
+            if (dealerHand.evaluateHand() > 21) {
+                bet = bet * 2;
+                gameOver = true;
+            }
+            //wint dealer als gelijk of geld terug?
+            if (playerHand.evaluateHand() == dealerHand.evaluateHand()) {
+                gameOver = true;
+            }
+            if (21 >= playerHand.evaluateHand() && playerHand.evaluateHand() > dealerHand.evaluateHand()) {
+                bet = bet * 2;
+                gameOver = true;
+            }
+
+            return new GameResponse(
+                    id, username, bet, playerHand, dealerHand, gameOver
+            );
+        }
+        throw new Api400Exception("'"+ move +"' is not a viable move! please try again");
     }
 
     public UUID getId() {
