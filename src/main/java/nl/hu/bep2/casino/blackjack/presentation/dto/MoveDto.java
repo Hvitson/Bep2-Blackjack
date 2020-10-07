@@ -1,7 +1,6 @@
 package nl.hu.bep2.casino.blackjack.presentation.dto;
 
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 public class MoveDto {
     @NotNull

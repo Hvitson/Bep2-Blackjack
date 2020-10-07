@@ -77,7 +77,11 @@ public class GameController {
     //todo: lijst alle games met eventueel of hij afgesloten is of lijst met alle openstaande spellen?
     // + informatie over user? zoals gespeelde spellen? aantal gewoonn
     @GetMapping("/{username}")
-    public UserDto get(@PathVariable("username") final String username) {
+    public UserDto get(Authentication authentication, @PathVariable("username") final String username) {
+        UserProfile profile = (UserProfile) authentication.getPrincipal();
+        if (profile.getUsername() != username) {
+            throw new Api400Exception("You dont belong HIERRRRR");
+        }
         UserDto userDto = new UserDto(username, null);
            return applyHateoasLinkToUsersGames(userDto);
 
@@ -97,7 +101,6 @@ public class GameController {
         if (!username.equals(game.getUsername())) {
             throw new Api400Exception("User " + username + " does not belong to game with id: " + id);
         }
-        System.out.println("test 123");
         GameResponse gameResponse = this.gameService.gameMove(id, move);
         GameDto gameDto = new GameDto(gameResponse.getUsername(), gameResponse.getId(),
                 gameResponse.getBet(), gameResponse.getPlayerHand(),
@@ -126,7 +129,7 @@ public class GameController {
     }
 
     private GameDto applyHateoasLinkToUser(GameDto gameDto) {
-        final Link UserLink = linkTo(methodOn(GameController.class).get(gameDto.getUsername())).withSelfRel();
+        final Link UserLink = linkTo(methodOn(GameController.class).get(null, gameDto.getUsername())).withSelfRel();
         gameDto.add(UserLink);
         return gameDto;
     }

@@ -71,6 +71,7 @@ public class Game {
     }
 
     public GameResponse move(String move){
+
         if (move.equals("hit")) {
             playerHand.addCard(deck.deal());
 
