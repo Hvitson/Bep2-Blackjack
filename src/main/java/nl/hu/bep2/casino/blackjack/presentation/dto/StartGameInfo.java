@@ -1,31 +1,37 @@
 package nl.hu.bep2.casino.blackjack.presentation.dto;
 
+import nl.hu.bep2.casino.blackjack.domain.GameModes;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 public class StartGameInfo {
     @Positive
+    @NotNull
     public Long betAmount;
     @NotNull
-    public int amountOfDecks;
+    public int decks;
     @NotNull
-    public int fakeReal;
+    public GameModes gameMode;
 
-    public StartGameInfo(@Positive Long betAmount, @NotNull int amountOfDecks, @NotNull int fakeReal) {
+    public StartGameInfo(@Positive @NotEmpty(message = "Bet cannot be empty.") Long betAmount, @NotNull int decks, @Validated GameModes gameMode) {
         this.betAmount = betAmount;
-        this.amountOfDecks = amountOfDecks;
-        this.fakeReal = fakeReal;
+        this.decks = decks;
+        this.gameMode = gameMode;
     }
 
     public Long getBetAmount() {
         return betAmount;
     }
 
-    public int getAmountOfDecks() {
-        return amountOfDecks;
+    public int getDecks() {
+        return decks;
     }
 
-    public int getFakeReal() {
-        return fakeReal;
+    public GameModes getGameMode() {
+        return gameMode;
     }
 }

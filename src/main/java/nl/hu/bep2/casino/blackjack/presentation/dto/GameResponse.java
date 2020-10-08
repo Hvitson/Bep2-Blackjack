@@ -1,4 +1,7 @@
-package nl.hu.bep2.casino.blackjack.domain;
+package nl.hu.bep2.casino.blackjack.presentation.dto;
+
+import nl.hu.bep2.casino.blackjack.domain.GameModes;
+import nl.hu.bep2.casino.blackjack.domain.Hand;
 
 import java.util.UUID;
 
@@ -9,11 +12,11 @@ public class GameResponse {
     private Long balanceChange;
     private Hand playerHand;
     private Hand dealerHand;
-    private int gameMode;
+    private GameModes gameMode;
     private boolean gameOver;
 
     public GameResponse(UUID id, String username, Long bet, Long balanceChange, Hand playerHand,
-                        Hand dealerHand, int gameMode, boolean gameOver) {
+                        Hand dealerHand, GameModes gameMode, boolean gameOver) {
         this.id = id;
         this.username = username;
         this.bet = bet;
@@ -48,7 +51,7 @@ public class GameResponse {
         return dealerHand;
     }
 
-    public int getGameMode() {
+    public GameModes getGameMode() {
         return gameMode;
     }
 

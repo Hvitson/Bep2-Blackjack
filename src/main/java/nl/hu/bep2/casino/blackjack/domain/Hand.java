@@ -23,8 +23,6 @@ public class Hand implements Serializable {
         return this.cards.get(i);
     }
 
-
-
     public void moveBackToDeck(Deck toFillDeck){
         int deckSize = this.cards.size();
 
