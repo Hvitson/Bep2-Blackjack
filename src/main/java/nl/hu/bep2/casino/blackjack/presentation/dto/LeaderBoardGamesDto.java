@@ -5,12 +5,12 @@ import nl.hu.bep2.casino.security.data.User;
 import java.util.Objects;
 
 public class LeaderBoardGamesDto {
-    private final String username;
     private final int gamesPlayed;
+    private final String username;
 
-    public LeaderBoardGamesDto(String username, int gamesPlayed) {
-        this.username = username;
+    public LeaderBoardGamesDto (int gamesPlayed, String username) {
         this.gamesPlayed = gamesPlayed;
+        this.username = username;
     }
 
     public String getUsername() {

@@ -35,13 +35,11 @@ public class GameService {
         return this.gameRepository.findById(id);
     }
 
-    public List<Game> findAllGames(java.lang.String username) {
+    public List<Game> findAllGames(String username) {
         return this.gameRepository.findAllByUsername(username);
     }
 
-
-    public GameResponse start(java.lang.String username, Long bet, int amountOfDecks, GameModes gameMode) {
-
+    public GameResponse start(String username, Long bet, int amountOfDecks, GameModes gameMode) {
         this.chipsService.withdrawChips(username, bet);
 
         AmountOfDecksFactory factory = new AmountOfDecksFactory(amountOfDecks);

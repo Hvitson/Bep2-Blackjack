@@ -114,7 +114,7 @@ public class GameController {
         for (User user : this.userService.findAllUsers()) {
             String username = user.getUsername();
             int gamesPlayed = this.gameService.findAllGames(username).size();
-            LeaderBoardGamesDto leaderBoardGamesDto = new LeaderBoardGamesDto(username, gamesPlayed);
+            LeaderBoardGamesDto leaderBoardGamesDto = new LeaderBoardGamesDto(gamesPlayed, username);
             totalGamesUser.add(leaderBoardGamesDto);
         }
 //        List.sort(totalGamesUser, Collections.reverseOrder());

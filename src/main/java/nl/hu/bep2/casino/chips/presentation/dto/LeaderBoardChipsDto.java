@@ -1,8 +1,10 @@
 package nl.hu.bep2.casino.chips.presentation.dto;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import java.util.Objects;
 
-public class LeaderBoardChipsDto {
+public class LeaderBoardChipsDto extends RepresentationModel<LeaderBoardChipsDto> {
     private final Long chipsAmount;
     private final String username;
 
