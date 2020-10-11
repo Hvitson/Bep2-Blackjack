@@ -6,8 +6,6 @@ public class Card implements Serializable {
     private final Suit suit;
     private final Rank rank;
 
-
-    //aanmaken card Card card = new Card(Suit.Hearts,Rank.Ten)
     public Card(Suit suit, Rank rank) {
         this.suit = suit;
         this.rank = rank;
@@ -71,6 +69,4 @@ public class Card implements Serializable {
     public String toString(){
         return convertSuitToIcon(this.suit) + convertRankToIcon(this.rank);
     }
-
-    //public String toString(){return this.suit.toString() + " : " + this.rank.toString();}
 }

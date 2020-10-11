@@ -4,181 +4,129 @@ import nl.hu.bep2.casino.blackjack.domain.*;
 import nl.hu.bep2.casino.blackjack.presentation.dto.GameResponse;
 import nl.hu.bep2.casino.exceptions.apirequest.Api400Exception;
 
-import java.util.UUID;
-
 public class BlackJack21Rules implements Rules {
-    private UUID id;
-    private String username;
-    private Long bet;
-    private Long balanceChange;
-    private GameModes gameMode;
-    private boolean gameOver;
-    private Hand playerHand;
-    private Hand dealerHand;
-    private Deck deck;
+    private final Game game;
 
-    public BlackJack21Rules(UUID id, String username, Long bet, Long balanceChange, Hand playerHand,
-                            Hand dealerHand, Deck deck, GameModes gameMode, boolean gameOver) {
-        this.id = id;
-        this.username = username;
-        this.bet = bet;
-        this.balanceChange = balanceChange;
-        this.playerHand = playerHand;
-        this.dealerHand = dealerHand;
-        this.deck = deck;
-        this.gameMode = gameMode;
-        this.gameOver = gameOver;
+    public BlackJack21Rules(Game game) {
+        this.game = game;
     }
 
     //boven 21 bust
     public GameResponse start() {
-        if (gameOver) {
+        if (game.isGameOver()) {
             throw new Api400Exception("KENNOT START GAME! thats already over");
         }
 
-        this.deck.shuffle();
+        this.game.getDeck().shuffle();
 
-        playerHand.addCard(deck.deal());
-        dealerHand.addCard(deck.deal());
-        playerHand.addCard(deck.deal());
-        dealerHand.addCard(deck.deal());
+        game.getPlayerHand().addCard(game.getDeck().deal());
+        game.getDealerHand().addCard(game.getDeck().deal());
+        game.getPlayerHand().addCard(game.getDeck().deal());
+        game.getDealerHand().addCard(game.getDeck().deal());
 
-        int playerValue = playerHand.evaluateHand();
-        int dealerValue = dealerHand.evaluateHand();
+        int playerValue = game.getPlayerHand().evaluateHand();
+        int dealerValue = game.getDealerHand().evaluateHand();
 
         if (playerValue == 21 && dealerValue == 21) {
-            balanceChange = bet;
-            gameOver = true;
+            game.setBalanceChange(game.getBet());
+            game.setGameOver(true);
         }
         if (playerValue == 21) {
-            balanceChange = bet * 5;
-            gameOver = true;
+            game.setBalanceChange(game.getBet() * 5);
+            game.setGameOver(true);
         }
         if (dealerValue == 21) {
-            balanceChange = bet * -1;
-            gameOver = true;
+            game.setBalanceChange(game.getBet() * -1);
+            game.setGameOver(true);
         }
-        if (gameOver = true) {
+        if (game.isGameOver()) {
             return new GameResponse(
-                    id, username, bet, balanceChange, playerHand, dealerHand, gameMode, gameOver
+                    game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand(), game.getGameMode(), game.isGameOver()
             );
         }
         return new GameResponse(
-                id, username, bet, balanceChange, playerHand, dealerHand.showFirstCard(), gameMode, gameOver
+                game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand().showFirstCard(), game.getGameMode(), game.isGameOver()
         );
     }
 
     //int var gebruiken? of wordt hij niet aangepast door while loop?
     public GameResponse move(Moves move){
-        if (move.equals(Moves.Stand) && playerHand.evaluateHand() < 17){
+        if (move.equals(Moves.STAND) && game.getPlayerHand().evaluateHand() < 17){
             throw new Api400Exception("You need atleast a value of 17 to stand!");
         }
 
-        if (move.equals(Moves.Hit)) {
-            playerHand.addCard(deck.deal());
+        if (move.equals(Moves.HIT)) {
+            game.getPlayerHand().addCard(game.getDeck().deal());
 
-            if (playerHand.evaluateHand() > 21){
-                balanceChange = bet * -1;
-                gameOver = true;
+            if (game.getPlayerHand().evaluateHand() > 21){
+                game.setBalanceChange(game.getBet() * -1);
+                game.setGameOver(true);
             }
-            if (playerHand.evaluateHand() == 21){
-                balanceChange = bet * 2;
-                gameOver = true;
+            if (game.getPlayerHand().evaluateHand() == 21){
+                game.setBalanceChange(game.getBet() * 2);
+                game.setGameOver(true);
             }
             //als playerValue 21 is ook stoppen?
 
-            if (gameOver = true) {
+            if (game.isGameOver()) {
                 return new GameResponse(
-                        id, username, bet, balanceChange, playerHand, dealerHand, gameMode, gameOver
+                        game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand(), game.getGameMode(), game.isGameOver()
                 );
             }
 
             return new GameResponse(
-                    id, username, bet, balanceChange, playerHand, dealerHand.showFirstCard(), gameMode, gameOver
+                    game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand().showFirstCard(), game.getGameMode(), game.isGameOver()
             );
         }
 
-        if (move.equals(Moves.Surrender)) {
-            balanceChange = bet / 2;
-            balanceChange *= 1;
-            gameOver = true;
+        if (move.equals(Moves.SURRENDER)) {
+            game.setBalanceChange(game.getBet() / 2 *-1);
+            game.setGameOver(true);
 
             return new GameResponse(
-                    id, username, bet, balanceChange, playerHand, dealerHand, gameMode, gameOver
+                    game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.showDealerHand(), game.getGameMode(), game.isGameOver()
             );
         }
 
-        if (move.equals(Moves.Double) || move.equals(Moves.Stand)) {
-            gameOver= true;
-            if (move.equals(Moves.Double)) {
-                bet = bet *2;
-                playerHand.addCard(deck.deal());
+        if (move.equals(Moves.DOUBLE) || move.equals(Moves.STAND)) {
+            game.setGameOver(true);
+            if (move.equals(Moves.DOUBLE)) {
+                game.setBet(game.getBet() * 2);
+                game.getPlayerHand().addCard(game.getDeck().deal());
             }
-            while (dealerHand.evaluateHand() < 17){
-                dealerHand.addCard(deck.deal());
+            while (game.getDealerHand().evaluateHand() < 17){
+                game.getDealerHand().addCard(game.getDeck().deal());
                 System.out.println("Dealer draws a card");
             }
-            if (dealerHand.evaluateHand() > 21) {
-                balanceChange = bet * 2;
+            if (game.getDealerHand().evaluateHand() > 21) {
+                game.setBalanceChange(game.getBet() * 2);
             }
-            if (playerHand.evaluateHand() == dealerHand.evaluateHand()) {
-                balanceChange = bet;
+            if (game.getPlayerHand().evaluateHand() == game.getDealerHand().evaluateHand()) {
+                game.setBalanceChange(game.getBet());
             }
-            if (21 >= playerHand.evaluateHand() && playerHand.evaluateHand() > dealerHand.evaluateHand()) {
-                balanceChange = bet * 2;
+            if (21 >= game.getPlayerHand().evaluateHand() && game.getPlayerHand().evaluateHand() > game.getDealerHand().evaluateHand()) {
+                game.setBalanceChange(game.getBet() * 2);
             }
-            if (21 >= dealerHand.evaluateHand() && dealerHand.evaluateHand() > dealerHand.evaluateHand()) {
-                balanceChange = bet * -1;
+            if (21 >= game.getDealerHand().evaluateHand() && game.getDealerHand().evaluateHand() > game.getDealerHand().evaluateHand()) {
+                game.setBalanceChange(game.getBet() * -1);
             }
 
             return new GameResponse(
-                    id, username, bet, balanceChange, playerHand, dealerHand, gameMode, gameOver
+                    game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.showDealerHand(), game.getGameMode(), game.isGameOver()
             );
         }
         throw new InvalidStateException("'"+ move +"' is not a viable move! please try again");
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public Long getBet() {
-        return bet;
-    }
-
-    public Long getBalanceChange() {
-        return balanceChange;
-    }
-
-    public Hand getPlayerHand() {
-        return playerHand;
-    }
-
-    public Hand getDealerHand() {
-        return dealerHand;
-    }
-
-    public Enum getGameMode() {
-        return gameMode;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
     @Override
     public String toString() {
         return "Game{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", bet=" + bet +
-                ", gameOver=" + gameOver +
-                ", playerHand=" + playerHand +
-                ", dealerHand=" + dealerHand +
+                "id=" + game.getId() +
+                ", username='" + game.getUsername()+ '\'' +
+                ", bet=" + game.getBet()+
+                ", gameOver=" + game.isGameOver()+
+                ", playerHand=" + game.getPlayerHand()+
+                ", dealerHand=" + game.getDealerHand()+
                 '}';
     }
 }

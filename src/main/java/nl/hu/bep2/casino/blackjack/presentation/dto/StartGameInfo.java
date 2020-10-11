@@ -3,7 +3,6 @@ package nl.hu.bep2.casino.blackjack.presentation.dto;
 import nl.hu.bep2.casino.blackjack.domain.GameModes;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -15,9 +14,9 @@ public class StartGameInfo {
     @NotNull
     public int decks;
     @NotNull
-    public GameModes gameMode;
+    public String gameMode;
 
-    public StartGameInfo(@Positive @NotEmpty(message = "Bet cannot be empty.") Long betAmount, @NotNull int decks, @Validated GameModes gameMode) {
+    public StartGameInfo(@Positive @NotEmpty(message = "Bet cannot be empty.") Long betAmount, @NotNull int decks, @Validated String gameMode) {
         this.betAmount = betAmount;
         this.decks = decks;
         this.gameMode = gameMode;
@@ -31,7 +30,7 @@ public class StartGameInfo {
         return decks;
     }
 
-    public GameModes getGameMode() {
+    public String getGameMode() {
         return gameMode;
     }
 }

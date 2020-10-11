@@ -4,6 +4,7 @@ import nl.hu.bep2.casino.security.data.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,4 +18,5 @@ import java.util.Optional;
 @Repository
 public interface SpringChipsRepository extends JpaRepository<Chips, Long> {
     Optional<Chips> findByUser(User user);
+    List<Chips> findByOrderByAmountDesc();
 }

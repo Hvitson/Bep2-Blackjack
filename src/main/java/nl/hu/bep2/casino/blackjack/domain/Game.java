@@ -14,11 +14,11 @@ public class Game {
    @Column
     private String username;
     @Column
+    private GameModes gameMode;
+    @Column
     private Long bet;
     @Column
     private Long balanceChange;
-    @Column
-    private GameModes gameMode;
     @Column
     private boolean gameOver;
     @Lob
@@ -31,17 +31,17 @@ public class Game {
     @Column
     private Deck deck;
 
-    public Game(UUID id, String username, Long bet, Long balanceChange, Hand playerHand,
+    public Game(UUID id, java.lang.String username, Long bet, Long balanceChange, Hand playerHand,
                 Hand dealerHand, Deck deck, GameModes gameMode, boolean gameOver) {
         this.id = id;
         this.username = username;
+        this.gameMode = gameMode;
         this.bet = bet;
         this.balanceChange = balanceChange;
+        this.gameOver = gameOver;
         this.playerHand = playerHand;
         this.dealerHand = dealerHand;
         this.deck = deck;
-        this.gameMode = gameMode;
-        this.gameOver = gameOver;
     }
 
     public Game() {
@@ -55,6 +55,13 @@ public class Game {
         return  strategy.move(move);
     }
 
+    public Hand showDealerHand() {
+        if (gameOver){
+            return dealerHand;
+        }
+        return dealerHand.showFirstCard();
+    }
+
     public UUID getId() {
         return id;
     }
@@ -63,12 +70,20 @@ public class Game {
         return username;
     }
 
+    public GameModes getGameMode() {
+        return gameMode;
+    }
+
     public Long getBet() {
         return bet;
     }
 
     public Long getBalanceChange() {
         return balanceChange;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     public Hand getPlayerHand() {
@@ -83,20 +98,26 @@ public class Game {
         return deck;
     }
 
-    public GameModes getGameMode() {
-        return gameMode;
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
-    public boolean isGameOver() {
-        return gameOver;
+    public void setBet(Long bet) {
+        this.bet = bet;
+    }
+
+    public void setBalanceChange(Long balanceChange) {
+        this.balanceChange = balanceChange;
     }
 
     @Override
-    public String toString() {
+    public java.lang.String toString() {
         return "Game{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", gameMode=" + gameMode +
                 ", bet=" + bet +
+                ", balanceChange=" + balanceChange +
                 ", gameMode=" + gameMode +
                 ", gameOver=" + gameOver +
                 ", playerHand=" + playerHand +

@@ -4,11 +4,17 @@ import nl.hu.bep2.casino.chips.application.ChipsService;
 import nl.hu.bep2.casino.chips.data.Chips;
 import nl.hu.bep2.casino.chips.presentation.dto.Balance;
 import nl.hu.bep2.casino.chips.presentation.dto.Deposit;
+import nl.hu.bep2.casino.chips.presentation.dto.LeaderBoardChipsDto;
+import nl.hu.bep2.casino.security.data.User;
 import nl.hu.bep2.casino.security.data.UserProfile;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/chips")
@@ -42,5 +48,19 @@ public class ChipsController {
         UserProfile profile = (UserProfile) authentication.getPrincipal();
 
         this.service.depositChips(profile.getUsername(), deposit.amount);
+    }
+
+    @GetMapping("/leaderboard")
+    public List<LeaderBoardChipsDto> showLeaderBoard() {
+        List<LeaderBoardChipsDto> totalChipsUser = new ArrayList<>();
+        Long chipsAmount;
+
+        for (Chips chips: this.service.findAllChipsDesc()) {
+            chipsAmount = chips.getAmount();
+            User user = chips.getUser();
+            LeaderBoardChipsDto leaderBoardGamesDto = new LeaderBoardChipsDto(chipsAmount, user.getUsername());
+            totalChipsUser.add(leaderBoardGamesDto);
+        }
+        return totalChipsUser;
     }
 }

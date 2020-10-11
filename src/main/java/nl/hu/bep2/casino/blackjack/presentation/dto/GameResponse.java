@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class GameResponse {
     private UUID id;
-    private String username;
+    private java.lang.String username;
     private Long bet;
     private Long balanceChange;
     private Hand playerHand;
@@ -15,16 +15,16 @@ public class GameResponse {
     private GameModes gameMode;
     private boolean gameOver;
 
-    public GameResponse(UUID id, String username, Long bet, Long balanceChange, Hand playerHand,
+    public GameResponse(UUID id, java.lang.String username, Long bet, Long balanceChange, Hand playerHand,
                         Hand dealerHand, GameModes gameMode, boolean gameOver) {
         this.id = id;
         this.username = username;
+        this.gameMode = gameMode;
         this.bet = bet;
         this.balanceChange = balanceChange;
+        this.gameOver = gameOver;
         this.playerHand = playerHand;
         this.dealerHand = dealerHand;
-        this.gameMode = gameMode;
-        this.gameOver = gameOver;
     }
 
     public UUID getId() {
@@ -35,12 +35,20 @@ public class GameResponse {
         return username;
     }
 
+    public GameModes getGameMode() {
+        return gameMode;
+    }
+
     public Long getBet() {
         return bet;
     }
 
     public Long getBalanceChange() {
         return balanceChange;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     public Hand getPlayerHand() {
@@ -51,25 +59,18 @@ public class GameResponse {
         return dealerHand;
     }
 
-    public GameModes getGameMode() {
-        return gameMode;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
     @Override
-    public String toString() {
+    public java.lang.String toString() {
         return "GameResponse{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", gameMode=" + gameMode +
                 ", bet=" + bet +
                 ", balanceChange=" + balanceChange +
+                ", gameMode=" + gameMode +
+                ", gameOver=" + gameOver +
                 ", playerHand=" + playerHand +
                 ", dealerHand=" + dealerHand +
-                ", gameOver=" + gameOver +
                 '}';
     }
 }
-

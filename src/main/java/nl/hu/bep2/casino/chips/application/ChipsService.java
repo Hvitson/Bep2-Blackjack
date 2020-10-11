@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Transactional
@@ -32,10 +33,6 @@ public class ChipsService {
         User user = this.userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
 
-        // This will just deposit any amount of chips,
-        // in a real world scenario, you would send the
-        // use through a payment gateway before adding the amount
-        // after confirmation
         Chips chips = this.chipsRepository.findByUser(user)
             .orElse(new Chips(user, 0L));
         chips.deposit(amount);
@@ -50,5 +47,9 @@ public class ChipsService {
         Chips chips = this.chipsRepository.findByUser(user)
                 .orElse(new Chips(user, 0L));
         chips.withdraw(amount);
+    }
+
+    public List<Chips> findAllChipsDesc() {
+        return chipsRepository.findByOrderByAmountDesc();
     }
 }

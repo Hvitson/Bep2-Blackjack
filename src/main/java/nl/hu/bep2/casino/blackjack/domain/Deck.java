@@ -17,27 +17,16 @@ public class Deck implements Serializable {
         this.cards = cards;
     }
 
-//    public void fill() {
-//        for (Suit suit : Suit.values()) {
-//            for (Rank rank : Rank.values()) {
-//                this.cards.add(new Card(suit,rank));
-//            }
-//        }
-//    }
-
-    //schudden van de kaarten nu automaties bij het aanmaken van een deck
     public void shuffle(){
         Collections.shuffle(this.cards);
     }
 
-    //take upper card from deck
     public Card deal(){
         Card card = this.cards.get(0);
         this.cards.remove(0);
         return card;
     }
 
-    //adds card to deck"hand"
     public void addCard(Card card){
         this.cards.add(card);
     }

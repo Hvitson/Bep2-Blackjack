@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  *  Implements UserDetailsService in order to make it usable
@@ -48,5 +49,9 @@ public class UserService implements UserDetailsService {
     public User loadUserByUsername(String username) {
         return this.userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
+    }
+
+    public List<User> findAllUsers() {
+        return this.userRepository.findAll();
     }
 }

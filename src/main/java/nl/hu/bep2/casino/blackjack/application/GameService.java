@@ -2,6 +2,7 @@ package nl.hu.bep2.casino.blackjack.application;
 
 import nl.hu.bep2.casino.blackjack.data.SpringGameRepository;
 import nl.hu.bep2.casino.blackjack.domain.*;
+import nl.hu.bep2.casino.blackjack.domain.GameModes;
 import nl.hu.bep2.casino.blackjack.domain.actualgamerules.BlackJack21Rules;
 import nl.hu.bep2.casino.blackjack.domain.actualgamerules.BlackJack31Rules;
 import nl.hu.bep2.casino.blackjack.domain.deckfillfactory.AmountOfDecksFactory;
@@ -10,11 +11,11 @@ import nl.hu.bep2.casino.chips.application.ChipsService;
 import nl.hu.bep2.casino.chips.data.SpringChipsRepository;
 import nl.hu.bep2.casino.security.data.SpringUserRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,14 +24,10 @@ import java.util.UUID;
 public class GameService {
 
     private final SpringGameRepository gameRepository;
-    private final SpringUserRepository userRepository;
-    private final SpringChipsRepository chipsRepository;
     private final ChipsService chipsService;
 
-    public GameService(SpringGameRepository gameRepository, SpringUserRepository userRepository, SpringChipsRepository chipsRepository, ChipsService chipsService) {
+    public GameService(SpringGameRepository gameRepository, ChipsService chipsService) {
         this.gameRepository = gameRepository;
-        this.userRepository = userRepository;
-        this.chipsRepository = chipsRepository;
         this.chipsService = chipsService;
     }
 
@@ -38,11 +35,12 @@ public class GameService {
         return this.gameRepository.findById(id);
     }
 
-//    public UUID findAllGamesFromUser(String username){
-//        return this.gameRepository.selectAllGamesFromUser(username);
-//    }
+    public List<Game> findAllGames(java.lang.String username) {
+        return this.gameRepository.findAllByUsername(username);
+    }
 
-    public GameResponse start(String username, Long bet, int amountOfDecks, GameModes gameMode) {
+
+    public GameResponse start(java.lang.String username, Long bet, int amountOfDecks, GameModes gameMode) {
 
         this.chipsService.withdrawChips(username, bet);
 
@@ -53,14 +51,11 @@ public class GameService {
         Long balanceChange = 0L;
         Game game = new Game(id, username, bet, balanceChange, new Hand(), new Hand(), playingDeck, gameMode, false);
 
-        //Strategy 1 is normal blackjack 2 is fake blackjack
-        //kan dit beterr?
-
         Rules rules;
-        if (gameMode.equals(GameModes.Blackjack21)) {
-            rules = new BlackJack21Rules(game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand(), game.getDeck(), game.getGameMode(), game.isGameOver());
+        if (gameMode.equals(GameModes.BLACKJACK21)) {
+            rules = new BlackJack21Rules(game);
         }else {
-            rules = new BlackJack31Rules(game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand(), game.getDeck(), game.getGameMode(), game.isGameOver());
+            rules = new BlackJack31Rules(game);
         }
 
         var response = rules.start();
@@ -75,17 +70,17 @@ public class GameService {
     public GameResponse gameMove(UUID id, Moves move)  {
         Game game = this.gameRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        String username = game.getUsername();
+        java.lang.String username = game.getUsername();
 
         if (move.equals("double")) {
             this.chipsService.withdrawChips(username, game.getBet());
         }
 
         Rules rules;
-        if (game.getGameMode().equals(GameModes.Blackjack21)) {
-            rules = new BlackJack21Rules(game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand(), game.getDeck(), game.getGameMode(), game.isGameOver());
+        if (game.getGameMode().equals(GameModes.BLACKJACK21)) {
+            rules = new BlackJack21Rules(game);
         }else {
-            rules = new BlackJack31Rules(game.getId(), game.getUsername(), game.getBet(), game.getBalanceChange(), game.getPlayerHand(), game.getDealerHand(), game.getDeck(), game.getGameMode(), game.isGameOver());
+            rules = new BlackJack31Rules(game);
         }
 
         var response = rules.move(move);
